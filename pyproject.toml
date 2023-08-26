@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "build-measurand"
+authors = [{ name = "Jonathan Olsten", email = "jonathan.olsten@gmail.com" }]
+description = "Build arbitrary parameters from binary data"
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = []
+license = { text = "MIT" }
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+]
+dependencies = ["numpy>=1.20.3", "pyarrow>=7.0.0", "pydantic>=2.0"]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = [
+    "setuptools",
+    "setuptools-scm",
+    "build",
+    "wheel",
+    "pytest",
+    "pytest-cov",
+    "hypothesis",
+    "sphinx",
+    "sphinx-rtd-theme",
+]
+[tool.setuptools]
+packages = ['build_measurand']
+
+[tool.setuptools_scm]
+parentdir_prefix_version = "build-measurand-"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--cov=build_measurand --cov-report html"
+testpaths = ["tests"]

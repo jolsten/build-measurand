@@ -1,0 +1,12 @@
+from .onescomp import jfunc as onescomp
+from .twoscomp import jfunc as twoscomp
+from .bcd import jfunc as bcd
+from .dec32 import jfunc as dec32
+from .dec64 import jfunc as dec64
+from .dec64g import jfunc as dec64g
+from .ibm32 import jfunc as ibm32
+from .ibm64 import jfunc as ibm64
+from .milstd1750a32 import jfunc as milstd1750a32
+from .milstd1750a48 import jfunc as milstd1750a48
+from .ti32 import jfunc as ti32
+from .ti40 import jfunc as ti40
