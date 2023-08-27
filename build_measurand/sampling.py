@@ -2,7 +2,7 @@ from typing import Literal
 import numpy as np
 from .generic import MeasurandModifier
 
-SamplingStrategy = Literal["mean", "mode"]
+SamplingStrategy = Literal["mean", "mode", "max", "min"]
 
 
 class Sampling(MeasurandModifier):

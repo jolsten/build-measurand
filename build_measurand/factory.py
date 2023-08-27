@@ -1,4 +1,5 @@
 import functools
+from typing import Dict, Any
 
 
 class FactoryBuilderNotFound(ValueError):
@@ -11,7 +12,7 @@ class FactoryBuilderNotFound(ValueError):
 
 
 class ObjectFactory:
-    _registry = {}
+    _registry: Dict[str, Any] = {}
 
     @classmethod
     def register(cls, v: str) -> callable:
@@ -32,3 +33,7 @@ class ObjectFactory:
         if not builder:
             raise FactoryBuilderNotFound(key, builder)
         return builder(**kwargs)
+
+    @property
+    def registry(self) -> dict:
+        return self._registry
