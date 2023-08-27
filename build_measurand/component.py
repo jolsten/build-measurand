@@ -64,10 +64,6 @@ class Component(BaseModel):
     ) -> "Component":
         return make_component(spec=spec, word_size=word_size, one_based=one_based)
 
-    # @property
-    # def bits(self) -> List[int]:
-    #     return list(range(self.lsb, self.msb + 1))
-
     @cached_property
     def size(self) -> int:
         if self.mask:

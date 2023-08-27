@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import ClassVar, Optional
 import numpy as np
 from .factory import ObjectFactory
 from .types.ufunc import (
@@ -14,15 +15,11 @@ from .types.ufunc import (
     dec64,
     dec64g,
 )
+from .generic import MeasurandModifier
 
 
-class InterpStrategy(ABC):
-    @abstractmethod
-    def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
-        ...
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}()"
+class Interp(MeasurandModifier):
+    SIZE: ClassVar[Optional[int]] = None
 
 
 class InvalidInterpType(ValueError):
@@ -34,9 +31,7 @@ class InvalidInterpType(ValueError):
 
 
 class InvalidInterpSize(ValueError):
-    def __init__(
-        self, cls: InterpStrategy, expected_size: int, received_size: int
-    ) -> None:
+    def __init__(self, cls: Interp, expected_size: int, received_size: int) -> None:
         self.msg = f"{cls.__name__} expects a word with size {expected_size}"
         f"but was provided a word with size {received_size}"
 
@@ -48,26 +43,26 @@ interp = ObjectFactory()
 
 
 @interp.register("u")
-class Unsigned(InterpStrategy):
+class Unsigned(Interp):
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
         return data
 
 
 @interp.register("1c")
-class OnesComplement(InterpStrategy):
+class OnesComplement(Interp):
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
         return onescomp(data, bits)
 
 
 @interp.register("2c")
-class TwosComplement(InterpStrategy):
+class TwosComplement(Interp):
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
         return twoscomp(data, bits)
 
 
 @interp.register("ieee16")
-class IEEE16(InterpStrategy):
-    SIZE = 16
+class IEEE16(Interp):
+    SIZE: ClassVar[Optional[int]] = 16
 
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
         if bits != self.SIZE:
@@ -76,9 +71,8 @@ class IEEE16(InterpStrategy):
 
 
 @interp.register("ieee32")
-class IEEE32(InterpStrategy):
-    __name__ = "ieee32"
-    SIZE = 32
+class IEEE32(Interp):
+    SIZE: ClassVar[Optional[int]] = 32
 
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
         if bits != self.SIZE:
@@ -87,8 +81,8 @@ class IEEE32(InterpStrategy):
 
 
 @interp.register("ieee64")
-class IEEE64(InterpStrategy):
-    SIZE = 64
+class IEEE64(Interp):
+    SIZE: ClassVar[Optional[int]] = 64
 
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
         if bits != self.SIZE:
@@ -97,8 +91,8 @@ class IEEE64(InterpStrategy):
 
 
 @interp.register("1750a32")
-class MilStd1750A32(InterpStrategy):
-    SIZE = 32
+class MilStd1750A32(Interp):
+    SIZE: ClassVar[Optional[int]] = 32
 
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
         if bits != self.SIZE:
@@ -107,8 +101,8 @@ class MilStd1750A32(InterpStrategy):
 
 
 @interp.register("1750a48")
-class MilStd1750A48(InterpStrategy):
-    SIZE = 48
+class MilStd1750A48(Interp):
+    SIZE: ClassVar[Optional[int]] = 48
 
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
         if bits != self.SIZE:
@@ -117,8 +111,8 @@ class MilStd1750A48(InterpStrategy):
 
 
 @interp.register("ti32")
-class TI32(InterpStrategy):
-    SIZE = 32
+class TI32(Interp):
+    SIZE: ClassVar[Optional[int]] = 32
 
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
         if bits != self.SIZE:
@@ -127,8 +121,8 @@ class TI32(InterpStrategy):
 
 
 @interp.register("ti40")
-class TI40(InterpStrategy):
-    SIZE = 40
+class TI40(Interp):
+    SIZE: ClassVar[Optional[int]] = 40
 
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
         if bits != self.SIZE:
@@ -137,8 +131,8 @@ class TI40(InterpStrategy):
 
 
 @interp.register("ibm32")
-class IBM32(InterpStrategy):
-    SIZE = 32
+class IBM32(Interp):
+    SIZE: ClassVar[Optional[int]] = 32
 
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
         if bits != self.SIZE:
@@ -147,8 +141,8 @@ class IBM32(InterpStrategy):
 
 
 @interp.register("ibm64")
-class IBM64(InterpStrategy):
-    SIZE = 64
+class IBM64(Interp):
+    SIZE: ClassVar[Optional[int]] = 64
 
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
         if bits != self.SIZE:
@@ -156,8 +150,9 @@ class IBM64(InterpStrategy):
         return ibm64(data)
 
 
-class DEC32(InterpStrategy):
-    SIZE = 32
+@interp.register("dec32")
+class DEC32(Interp):
+    SIZE: ClassVar[Optional[int]] = 32
 
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
         if bits != self.SIZE:
@@ -165,8 +160,9 @@ class DEC32(InterpStrategy):
         return dec32(data)
 
 
-class DEC64(InterpStrategy):
-    SIZE = 64
+@interp.register("dec64")
+class DEC64(Interp):
+    SIZE: ClassVar[Optional[int]] = 64
 
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
         if bits != self.SIZE:
@@ -174,10 +170,15 @@ class DEC64(InterpStrategy):
         return dec64(data)
 
 
-class DEC64G(InterpStrategy):
-    SIZE = 64
+@interp.register("dec64g")
+class DEC64G(Interp):
+    SIZE: ClassVar[Optional[int]] = 64
 
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
         if bits != self.SIZE:
             raise InvalidInterpSize(self.__class__, self.SIZE, bits)
         return dec64g(data)
+
+
+def make_interp(spec: str) -> Interp:
+    return interp.create(spec)

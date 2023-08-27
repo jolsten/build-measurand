@@ -1,6 +1,13 @@
 from typing import Literal
-from pydantic import BaseModel
+import numpy as np
+from .generic import MeasurandModifier
 
-class SamplingStrategy(BaseModel):
+SamplingStrategy = Literal["mean", "mode"]
+
+
+class Sampling(MeasurandModifier):
     window: int
-    mode: Literal["mean", "mode"]
+    mode: SamplingStrategy
+
+    def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
+        raise NotImplementedError

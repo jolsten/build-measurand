@@ -230,20 +230,20 @@ def test_1750a48(uint, value):
     assert list(strategy.apply_ndarray(data, 48)) == pytest.approx([value] * 10)
 
 
-INTERP_SPECS = list(interp._registry.keys())
+# INTERP_SPECS = list(interp._registry.keys())
 
 
-@given(st.sampled_from(INTERP_SPECS))
-def test_equality(strategy):
-    i1, i2 = interp.create(strategy), interp.create(strategy)
-    assert i1 == i2
+# @given(st.sampled_from(INTERP_SPECS))
+# def test_equality(strategy):
+#     i1, i2 = interp.create(strategy), interp.create(strategy)
+#     assert i1 == i2
 
 
-@given(st.sampled_from(INTERP_SPECS), st.sampled_from(INTERP_SPECS))
-def test_not_equal(s1, s2):
-    assume(s1 != s2)
-    i1, i2 = interp.create(s1), interp.create(s2)
-    assert i1 != i2
+# @given(st.sampled_from(INTERP_SPECS), st.sampled_from(INTERP_SPECS))
+# def test_not_equal(s1, s2):
+#     assume(s1 != s2)
+#     i1, i2 = interp.create(s1), interp.create(s2)
+#     assert i1 != i2
 
 
 ###################

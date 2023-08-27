@@ -17,7 +17,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
 ]
-dependencies = ["numpy>=1.20.3", "pyarrow>=7.0.0", "pydantic>=2.0"]
+dependencies = ["numpy<1.24,>=1.19 ", "numba>=0.57", "pyarrow>=7.0.0", "pydantic>=2.0"]
 dynamic = ["version"]
 
 [project.optional-dependencies]
@@ -33,7 +33,7 @@ dev = [
     "sphinx-rtd-theme",
 ]
 [tool.setuptools]
-packages = ['build_measurand']
+packages = ["build_measurand"]
 
 [tool.setuptools_scm]
 parentdir_prefix_version = "build-measurand-"
