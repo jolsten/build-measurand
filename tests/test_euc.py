@@ -36,7 +36,7 @@ def test_make_euc_scalefactor(db, sf, sb):
     ST_SCALE_FACTOR,
     ST_SCALE_FACTOR,
 )
-def test_euc_apply_ndarray(val, db, sf, sb):
+def test_euc_apply_ndarray(val: int, db: float, sf: float, sb: float):
     euc = ScaleFactorEUC(data_bias=db, scale_factor=sf, scaled_bias=sb)
     data = np.array([val] * 10, dtype="u1")
     result = euc.apply_ndarray(data, 8)
