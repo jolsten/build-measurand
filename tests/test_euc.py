@@ -41,7 +41,7 @@ def test_euc_apply_ndarray(val: int, db: float, sf: float, sb: float):
     data = np.array([val] * 10, dtype="u1")
     result = euc.apply_ndarray(data, 8)
     answer = (data.astype("f8") + db) * sf + sb
-    assert result.tolist() == answer.tolist()
+    assert result.tolist() == pytest.approx(answer.tolist())
 
 
 def test_scale_factor_invalid():

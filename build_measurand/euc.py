@@ -14,12 +14,12 @@ RE_FLOAT = re.compile(r"[\d\.\+\-\*\/]+")
 
 def validate_float(spec: str) -> float:
     try:
-        return float(spec)
+        return np.float32(float(spec))
     except ValueError:
         # Power: Replace ^ (bitwise and) with ** (raise to power)
         spec = spec.replace("^", "**")
         if RE_FLOAT.match(spec):
-            return eval(spec)
+            return np.float32(eval(spec))
     raise ValueError
 
 
@@ -67,20 +67,23 @@ class ScaleFactorEUC(EUC):
     scaled_bias: Optional[Float] = None
 
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
-        # Convert the data to float64 unless the EUC is a NoOp
-        if any(
+        dtype = np.dtype(">f8")
+
+        # If the data is not already floating, and the EUC is not a No-Op:
+        # Convert the data to float
+        if not np.issubdtype(data.dtype, np.floating) and any(
             v is not None for v in (self.data_bias, self.scale_factor, self.scaled_bias)
         ):
-            data = data.astype(">f8")
+            data = data.astype(dtype)
 
         if self.data_bias is not None:
-            data += np.float64(self.data_bias)
+            data += self.data_bias
 
         if self.scale_factor is not None:
-            data = data * np.float64(self.scale_factor)
+            data = data * self.scale_factor
 
         if self.scaled_bias is not None:
-            data += np.float64(self.scaled_bias)
+            data += self.scaled_bias
 
         return data
 
