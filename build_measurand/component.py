@@ -20,8 +20,10 @@ def make_component(
 
     if m := RE_COMPONENT.match(spec):
         word = int(m.group("W"))
+        print("A", word)
         if one_based:
             word += -1
+            print("B", word)
 
         if m.group("B"):
             lsb, msb = _range_to_tuple(m.group("B"))
@@ -44,7 +46,6 @@ def make_component(
             word_size=word_size,
             one_based=one_based,
         )
-        print(kwargs)
         return Component(**kwargs)
     else:
         raise ValueError(f"component spec={spec!r} not valid")

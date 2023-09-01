@@ -21,8 +21,10 @@ from build_measurand.parameter import (
     ],
 )
 def test_raw_param_components(spec, components):
-    comps = [Component.from_spec(c) for c in components]
-    assert make_parameter(spec).components == comps
+    comps = (Component.from_spec(c) for c in components)
+    param = make_parameter(spec)
+    print(comps, param.components)
+    assert list(param.components) == list(comps)
 
 
 @pytest.mark.parametrize(
@@ -83,7 +85,7 @@ def test_build_rawparam(spec, result):
     ],
 )
 def test_build_rawparam_10bit(spec, result):
-    r = Parameter(spec, word_size=12)
+    r = Parameter.from_spec(spec, word_size=12)
     print("spec =", spec)
     print(f"result = 0b{result:0{r.size}b}")
     assert r.build(SAMPLE_DATA_12)[0] == result

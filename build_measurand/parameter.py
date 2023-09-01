@@ -10,14 +10,14 @@ def make_parameter(
 ) -> "Parameter":
     raw_param = _expand_component_range(spec)
     components = (
-        Component(s, one_based=one_based, word_size=word_size)
+        Component.from_spec(s, one_based=one_based, word_size=word_size)
         for s in raw_param.split("+")
     )
     return Parameter(components=components, word_size=word_size, one_based=one_based)
 
 
 class Parameter(BaseModel):
-    components: Tuple[Component]
+    components: Tuple[Component, ...]
     one_based: bool = Field(default=True, frozen=True)
     word_size: int = Field(default=8, frozen=True)
 
