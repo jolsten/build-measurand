@@ -21,7 +21,7 @@ from build_measurand.parameter import (
     ],
 )
 def test_raw_param_components(spec, components):
-    comps = [Component(c) for c in components]
+    comps = [Component.from_spec(c) for c in components]
     assert make_parameter(spec).components == comps
 
 
@@ -64,7 +64,7 @@ SAMPLE_DATA_12 = np.array([np.arange(start=1, stop=4097, dtype="u2")] * 10)
     ],
 )
 def test_build_rawparam(spec, result):
-    r = Parameter(spec, word_size=8)
+    r = Parameter.from_spec(spec, word_size=8)
     print("spec =", spec)
     print(f"result = {result:0{r.size}b}")
     assert r.build(SAMPLE_DATA)[0] == result

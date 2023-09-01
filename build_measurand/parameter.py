@@ -32,3 +32,7 @@ class Parameter(BaseModel):
     @cached_property
     def size(self) -> int:
         return sum([c.size for c in self.components])
+
+    @classmethod
+    def from_spec(cls, spec: str, word_size=word_size) -> "Parameter":
+        return make_parameter(spec, word_size=word_size)
