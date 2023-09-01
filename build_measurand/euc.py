@@ -67,6 +67,12 @@ class ScaleFactorEUC(EUC):
     scaled_bias: Optional[Float] = None
 
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
+        # Convert the data to float64 unless the EUC is a NoOp
+        if any(
+            v is not None for v in (self.data_bias, self.scale_factor, self.scaled_bias)
+        ):
+            data = data.astype(">f8")
+
         if self.data_bias is not None:
             data += np.float64(self.data_bias)
 
