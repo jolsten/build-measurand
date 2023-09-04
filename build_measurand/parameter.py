@@ -1,7 +1,8 @@
 from typing import Tuple
 from functools import cached_property
+import numpy as np
 from pydantic import BaseModel, Field
-from .utils import _expand_component_range
+from .utils import _expand_component_range, _size_to_uint
 from .component import Component
 
 
@@ -36,3 +37,7 @@ class Parameter(BaseModel):
     @classmethod
     def from_spec(cls, spec: str, word_size=word_size) -> "Parameter":
         return make_parameter(spec, word_size=word_size)
+
+    def build(self, data: np.ndarray) -> np.ndarray:
+        dtype = _size_to_uint(self.size)
+        print("dtype =", dtype)
