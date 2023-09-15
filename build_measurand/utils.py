@@ -56,31 +56,39 @@ def _bit_range_to_mask_and_shift(lsb: int, msb: int) -> int:
     return mask, shift
 
 
-def _reverse_bits(
-    data: np.ndarray,
-    word_size: int,
-    result_size: int,
-) -> np.ndarray:
-    input_dtype = data.dtype
-    data = np.atleast_3d(data).view("u1")
-    bits = np.unpackbits(
-        data,
-        axis=2,
-        count=word_size,
-        bitorder="little",
-    )
-    data = np.packbits(bits, axis=-1, bitorder="big")
-    data = data.view(input_dtype).byteswap().flatten()
-    reverse_rshift = _size_to_uint(word_size).itemsize * 8 - result_size
-    if reverse_rshift:
-        data = data >> reverse_rshift
-    return data
+# def _reverse_bits(
+#     data: np.ndarray,
+#     word_size: int,
+#     result_size: int,
+# ) -> np.ndarray:
+#     input_dtype = data.dtype
+#     data = np.atleast_3d(data).view("u1")
+#     print("input_dtype =", input_dtype)
+#     print('view("u1").dtype =', data.dtype)
+#     bits = np.unpackbits(
+#         data,
+#         axis=2,
+#         count=word_size,
+#         bitorder="little",
+#     )
+#     data = np.packbits(bits, axis=-1, bitorder="big")
+#     print(data.dtype, data.shape)
+#     print(repr(data))
+#     data = data.view(input_dtype).byteswap().flatten()
+#     reverse_rshift = _size_to_uint(word_size).itemsize * 8 - result_size
+#     if reverse_rshift:
+#         data = data >> reverse_rshift
+#     return data
 
 
 # Maybe try this one out
-# def _reverse_bits(x: np.ndarray) -> np.ndarray:
-#     dtype = np.asanyarray(x).dtype
-#     return np.flip(np.packbits(np.flip(np.unpackbits(x.view(np.uint8)))).view(dtype))
+def _reverse_bits(x: np.ndarray, actual_size: int) -> np.ndarray:
+    dtype = np.asanyarray(x).dtype
+    result = np.flip(np.packbits(np.flip(np.unpackbits(x.view(np.uint8)))).view(dtype))
+    shift = result.dtype.itemsize * 8 - actual_size
+    if shift:
+        np.right_shift(result, shift)
+    return result
 
 
 def _range_to_tuple(spec: str) -> Tuple[int, int]:

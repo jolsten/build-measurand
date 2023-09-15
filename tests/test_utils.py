@@ -9,6 +9,7 @@ from build_measurand.utils import (
     _reverse_bits,
     _expand_component_range,
 )
+from tests.conftest import ARRAY_SIZE
 
 
 @pytest.mark.parametrize(
@@ -153,5 +154,5 @@ def test_size_to_uint_too_big():
     ],
 )
 def test_bit_reverser(input, output, dtype, word_size, size):
-    data = np.array([input] * 10, dtype=dtype)
-    assert list(_reverse_bits(data, word_size=word_size, size=size)) == [output] * 10
+    data = np.array([input] * ARRAY_SIZE, dtype=dtype)
+    assert list(_reverse_bits(data, actual_size=size)) == list([output] * ARRAY_SIZE)

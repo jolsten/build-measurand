@@ -1,3 +1,4 @@
+from typing import List
 import pytest
 from hypothesis import given
 import hypothesis.strategies as st
@@ -137,3 +138,12 @@ def test_component_build(spec, result):
 #     def test_build(self, spec, result):
 #         c = make_component(spec)
 #         assert list(c.build(SAMPLE_DATA[8])) == list([result] * ARRAY_SIZE)
+
+
+@given(cst.word_and_word_size())
+def test_parameter(word_and_word_size):
+    word, word_size = word_and_word_size
+    p = make_component(f"{word}", word_size=word_size)
+    assert list(p.build(SAMPLE_DATA[word_size])) == list(
+        [word % 2**word_size] * ARRAY_SIZE
+    )

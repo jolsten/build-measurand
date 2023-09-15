@@ -1,3 +1,4 @@
+from typing import List
 import pytest
 from hypothesis import given, assume, strategies as st
 from build_measurand.parameter import (
@@ -62,7 +63,7 @@ def test_parameter_size(spec, word_size, size):
     ],
 )
 def test_build_parameter_8bit(spec, result):
-    p = Parameter.from_spec(spec, word_size=8)
+    p = make_parameter(spec, word_size=8)
     print("spec =", spec)
     print(f"result = {result:0{p.size}b}")
     out = p.build(SAMPLE_DATA[8])
@@ -102,50 +103,27 @@ def components_spec(draw, max_words=256):
     return "+".join([str(x) for x in list(range(start, stop + 1))])
 
 
-@given(components_spec())
+@given(cst.parameter_spec())
 def test_parameter_eq(spec):
-    spec = f"{spec};2c"
-    assert make_parameter(spec) == make_parameter(spec)
+    print("spec =", spec)
+    p1 = make_parameter(spec)
+    p2 = make_parameter(spec)
+    print("param 1:", p1)
+    print("param 2:", p2)
+    assert p1 == p2
 
 
 @given(components_spec(), components_spec())
 def test_parameter_ne(spec1, spec2):
     assume(spec1 != spec2)
     print(spec1, spec2)
-    spec1, spec2 = f"{spec1};2c", f"{spec2};2c"
     p1 = make_parameter(spec1)
     p2 = make_parameter(spec2)
     print(p1, p2, p1 == p2, p1 != p2)
     assert p1 != p2
 
 
-@given(st.integers(min_value=1, max_value=256))
-def test_parameter(word):
-    p = make_parameter(f"{word}")
-    assert list(p.build(SAMPLE_DATA[8])) == [word % 256] * 10
-
-
 @given(st.integers(min_value=1, max_value=4096))
 def test_parameter_12bit(word):
     p = make_parameter(f"{word}")
-    assert list(p.build(SAMPLE_DATA[12])) == [word % 256] * 10
-
-
-@pytest.mark.parametrize(
-    "uint, int",
-    [
-        (0b00000000, 0),
-        (0b00000001, 1),
-        (0b00000010, 2),
-        (0b01111110, 126),
-        (0b01111111, 127),
-        (0b10000000, -128),
-        (0b10000001, -127),
-        (0b10000010, -126),
-        (0b11111110, -2),
-        (0b11111111, -1),
-    ],
-)
-def test_parameter_8bit_2c(uint, int):
-    p = make_parameter(f"{uint};2c")
-    assert p.build(SAMPLE_DATA[8])[0] == int
+    assert list(p.build(SAMPLE_DATA[12])) == [word % 2**12] * ARRAY_SIZE

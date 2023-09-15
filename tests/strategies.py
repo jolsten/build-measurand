@@ -1,3 +1,4 @@
+from typing import List
 from hypothesis import strategies as st
 from build_measurand.component import Component
 
@@ -10,8 +11,17 @@ bit_positions = st.integers(min_value=0, max_value=15)
 
 
 @st.composite
-def word(draw, one_based: bool = True):
-    return draw(st.integers(min_value=1 if one_based else 0, max_value=MAX_FRAME_SIZE))
+def word(draw, one_based: bool = True, word_size: int = 8):
+    min = 1 if one_based else 0
+    max = 2**word_size if one_based else 2**word_size - 1
+    return draw(st.integers(min_value=min, max_value=max))
+
+
+@st.composite
+def word_and_word_size(draw, word_sizes: List[int] = [8, 10, 12]):
+    word_size = draw(st.sampled_from(word_sizes))
+    word_ = draw(word(word_size=word_size))
+    return word_, word_size
 
 
 @st.composite

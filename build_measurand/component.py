@@ -11,7 +11,7 @@ from .utils import (
 )
 
 RE_COMPONENT = re.compile(
-    r"^(?P<W>\d+(?:-\d+)?)(?:\:(?P<B>\d+(?:-\d+)?))?(?P<R>R)?$", re.IGNORECASE
+    r"^\[?(?P<W>\d+(?:-\d+)?)(?:\:(?P<B>\d+(?:-\d+)?))?(?P<R>R)?\]?$", re.IGNORECASE
 )
 
 
@@ -25,10 +25,9 @@ def make_component(
 
     if m := RE_COMPONENT.match(spec):
         word = int(m.group("W"))
-        print("A", word)
+
         if one_based:
             word += -1
-            print("B", word)
 
         if m.group("B"):
             lsb, msb = _range_to_tuple(m.group("B"))
@@ -53,7 +52,7 @@ def make_component(
         )
         return Component(**kwargs)
     else:
-        raise ValueError(f"component spec={spec!r} not valid")
+        raise ValueError(f"component spec {spec!r} not valid")
 
 
 class Component(BaseModel):
