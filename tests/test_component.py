@@ -1,15 +1,17 @@
 import pytest
 from hypothesis import given
 import hypothesis.strategies as st
-from build_measurand.component import Component, RE_COMPONENT, make_component
+from build_measurand.component import RE_COMPONENT, make_component
+from . import strategies as cst
+from .conftest import ARRAY_SIZE, SAMPLE_DATA
 
 
 @given(
-    st.integers(min_value=1, max_value=1023),
+    cst.component_spec(),
     st.booleans(),
 )
-def test_re_component(word, reversed):
-    spec1 = f'{word}{"R" if reversed else ""}'
+def test_re_component(word_spec, reversed):
+    spec1 = f'{word_spec}{"R" if reversed else ""}'
     print(spec1)
     assert RE_COMPONENT.match(spec1)
 
@@ -33,7 +35,7 @@ def test_re_component_with_bits(word, bits, reversed):
     assert RE_COMPONENT.match(spec2)
 
 
-@given(st.integers(min_value=1, max_value=1024))
+@given(cst.word(one_based=True))
 def test_component_1_based_byte(word):
     spec = f"{word}"
     c = make_component(spec)
@@ -42,7 +44,7 @@ def test_component_1_based_byte(word):
     assert c.shift == 0
 
 
-@given(st.integers(min_value=0, max_value=1023))
+@given(cst.word(one_based=False))
 def test_component_0_based_byte(word):
     spec = f"{word}"
     c = make_component(spec, one_based=False)
@@ -52,8 +54,8 @@ def test_component_0_based_byte(word):
 
 
 @given(
-    st.integers(min_value=1, max_value=1024),
-    st.integers(min_value=1, max_value=8),
+    cst.word(one_based=True),
+    cst.bit(one_based=True, word_size=16),
 )
 def test_component_1_based_bit(word, bit):
     spec = f"{word}:{bit}"
@@ -66,8 +68,8 @@ def test_component_1_based_bit(word, bit):
 
 
 @given(
-    st.integers(min_value=0, max_value=1023),
-    st.integers(min_value=0, max_value=7),
+    cst.word(one_based=False),
+    cst.bit(one_based=False, word_size=16),
 )
 def test_component_0_based_bit(word, bit):
     spec = f"{word}:{bit}"
@@ -101,3 +103,37 @@ def test_component_size(spec, word_size, size):
 def test_component_invalid_spec(spec):
     with pytest.raises(ValueError):
         make_component(spec)
+
+
+@pytest.mark.parametrize(
+    "spec, result",
+    [
+        ("1", 1),
+        ("128", 128),
+        ("255", 255),
+        ("1:1", 1),
+        ("256:1", 0),
+        ("170:1-4", 0xA),
+        ("170:5-8", 0xA),
+        ("1R", 128),
+        ("128R", 1),
+        ("170:1-4R", 0x5),
+        ("170:5-8R", 0x5),
+    ],
+)
+def test_component_build(spec, result):
+    c = make_component(spec)
+    assert list(c.build(SAMPLE_DATA[8])) == list([result] * ARRAY_SIZE)
+
+
+# @given(cst.component_spec(), st.sampled_from(SAMPLE_DATA.keys()))
+# class TestComponentBuild8:
+#     WORD_SIZE = 8
+
+#     @property
+#     def sample_data(self):
+#         return SAMPLE_DATA[self.word_size]
+
+#     def test_build(self, spec, result):
+#         c = make_component(spec)
+#         assert list(c.build(SAMPLE_DATA[8])) == list([result] * ARRAY_SIZE)

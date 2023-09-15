@@ -1,9 +1,14 @@
 import re
 from functools import cached_property
 from typing import Optional
+import numpy as np
 from pydantic import BaseModel, Field
-from .utils import _range_to_tuple, _bit_range_to_mask_and_shift
-
+from .utils import (
+    _range_to_tuple,
+    _bit_range_to_mask_and_shift,
+    _size_to_uint,
+    _reverse_bits,
+)
 
 RE_COMPONENT = re.compile(
     r"^(?P<W>\d+(?:-\d+)?)(?:\:(?P<B>\d+(?:-\d+)?))?(?P<R>R)?$", re.IGNORECASE
@@ -81,3 +86,20 @@ class Component(BaseModel):
                 self.word_size == other.word_size,
             ]
         )
+
+    def build(self, data: np.ndarray) -> np.ndarray:
+        uint_dtype = _size_to_uint(self.word_size)
+        tmp = data[:, self.word]
+
+        if self.mask:
+            mask = np.array([self.mask], dtype=uint_dtype)
+            tmp = np.bitwise_and(tmp, mask)
+
+        rshift = np.array([self.shift], dtype=uint_dtype)
+        if rshift:
+            tmp = np.right_shift(tmp, rshift)
+
+        if self.reverse:
+            tmp = _reverse_bits(tmp, self.word_size, self.size)
+
+        return tmp

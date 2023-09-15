@@ -1,5 +1,51 @@
 from hypothesis import strategies as st
+from build_measurand.component import Component
+
+MAX_FRAME_SIZE = 4096
+MAX_PARAMETER_SIZE = 64
 
 valid_parameter_sizes = st.integers(min_value=1, max_value=64)
 
 bit_positions = st.integers(min_value=0, max_value=15)
+
+
+@st.composite
+def word(draw, one_based: bool = True):
+    return draw(st.integers(min_value=1 if one_based else 0, max_value=MAX_FRAME_SIZE))
+
+
+@st.composite
+def bit(draw, one_based: bool = True, word_size: int = 8) -> int:
+    return draw(
+        st.integers(
+            min_value=1 if one_based else 0,
+            max_value=word_size if one_based else word_size - 1,
+        )
+    )
+
+
+@st.composite
+def component_spec(draw, one_based: bool = True, word_size: int = 8) -> str:
+    word_ = draw(word(one_based=one_based))
+    msb = draw(bit(one_based=one_based, word_size=word_size))
+    lsb = draw(bit(one_based=one_based, word_size=word_size))
+    if msb == lsb:
+        return f"{word_}:{lsb}"
+    elif msb < lsb:
+        msb, lsb = lsb, msb
+    return f"{word_}:{lsb}-{msb}"
+
+
+@st.composite
+def parameter_spec(
+    draw, max_size: int = 64, one_based: bool = True, word_size: int = 8
+) -> str:
+    max_components = max_size // word_size
+    components = draw(
+        st.lists(
+            component_spec(one_based=one_based, word_size=word_size),
+            min_size=1,
+            max_size=max_components,
+        )
+    )
+    return "[" + "+".join(components) + "]"

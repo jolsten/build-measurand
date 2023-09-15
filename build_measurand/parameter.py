@@ -39,5 +39,19 @@ class Parameter(BaseModel):
         return make_parameter(spec, word_size=word_size)
 
     def build(self, data: np.ndarray) -> np.ndarray:
+        tmp = np.atleast_2d(data)
+        print("aA", repr(tmp))
+
         dtype = _size_to_uint(self.size)
-        print("dtype =", dtype)
+        print("result dtype =", dtype)
+        print("aB", repr(tmp))
+
+        result = np.zeros(tmp.shape[0], dtype=dtype)
+        size = 0
+        for comp in reversed(self.components):
+            result += comp.build(tmp).astype(dtype) << size
+            size += comp.size
+
+        print("aC", repr(result))
+
+        return result
