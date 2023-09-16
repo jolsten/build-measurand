@@ -39,11 +39,12 @@ def component_spec(draw, one_based: bool = True, word_size: int = 8) -> str:
     word_ = draw(word(one_based=one_based))
     msb = draw(bit(one_based=one_based, word_size=word_size))
     lsb = draw(bit(one_based=one_based, word_size=word_size))
+    reverse = "R" if draw(st.booleans()) else ""
     if msb == lsb:
-        return f"{word_}:{lsb}"
+        return f"{word_}:{lsb}{reverse}"
     elif msb < lsb:
         msb, lsb = lsb, msb
-    return f"{word_}:{lsb}-{msb}"
+    return f"{word_}:{lsb}-{msb}{reverse}"
 
 
 @st.composite

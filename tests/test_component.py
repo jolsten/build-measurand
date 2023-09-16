@@ -4,17 +4,15 @@ from hypothesis import given
 import hypothesis.strategies as st
 from build_measurand.component import RE_COMPONENT, make_component
 from . import strategies as cst
+from .cases import Example, component_test_cases
 from .conftest import ARRAY_SIZE, SAMPLE_DATA
 
 
 @given(
     cst.component_spec(),
-    st.booleans(),
 )
-def test_re_component(word_spec, reversed):
-    spec1 = f'{word_spec}{"R" if reversed else ""}'
-    print(spec1)
-    assert RE_COMPONENT.match(spec1)
+def test_re_component(spec):
+    assert RE_COMPONENT.match(spec)
 
 
 @given(
@@ -106,45 +104,18 @@ def test_component_invalid_spec(spec):
         make_component(spec)
 
 
-@pytest.mark.parametrize(
-    "spec, result",
-    [
-        ("1", 1),
-        ("128", 128),
-        ("255", 255),
-        ("1:1", 1),
-        ("256:1", 0),
-        ("170:1-4", 0xA),
-        ("170:5-8", 0xA),
-        ("1R", 128),
-        ("128R", 1),
-        ("170:1-4R", 0x5),
-        ("170:5-8R", 0x5),
-    ],
-)
-def test_component_build(spec, result):
-    c = make_component(spec)
-    out = c.build(SAMPLE_DATA[8])
-    assert list(out) == list([result] * ARRAY_SIZE)
-
-
-# @given(cst.component_spec(), st.sampled_from(SAMPLE_DATA.keys()))
-# class TestComponentBuild8:
-#     WORD_SIZE = 8
-
-#     @property
-#     def sample_data(self):
-#         return SAMPLE_DATA[self.word_size]
-
-#     def test_build(self, spec, result):
-#         c = make_component(spec)
-#         assert list(c.build(SAMPLE_DATA[8])) == list([result] * ARRAY_SIZE)
+@pytest.mark.parametrize("case", component_test_cases)
+def test_component_build_ndarray(case: Example):
+    c = make_component(case.spec, word_size=case.word_size, one_based=case.one_based)
+    print(c)
+    out = c.build_ndarray(SAMPLE_DATA[case.word_size])
+    assert list(out) == list([case.result] * ARRAY_SIZE)
 
 
 @given(cst.word_and_word_size())
 def test_parameter(word_and_word_size):
     word, word_size = word_and_word_size
     p = make_component(f"{word}", word_size=word_size)
-    assert list(p.build(SAMPLE_DATA[word_size])) == list(
+    assert list(p.build_ndarray(SAMPLE_DATA[word_size])) == list(
         [word % 2**word_size] * ARRAY_SIZE
     )

@@ -18,11 +18,12 @@ class Measurand(BaseModel):
 def make_measurand(spec: str) -> Measurand:
     parts = spec.split(";")
     parameter = make_parameter(parts[0])
-
-    if len(parts) >= 1:
-        interp = make_interp(parts[1])
+    mapping = {"parameter": parameter}
 
     if len(parts) >= 2:
-        euc = make_euc(parts[2])
+        mapping["interp"] = make_interp(parts[1])
 
-    return Measurand(parameter=parameter, interp=interp, euc=euc)
+    if len(parts) >= 3:
+        mapping["euc"] = make_euc(parts[2])
+
+    return Measurand(**mapping)

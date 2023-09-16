@@ -1,7 +1,7 @@
 import numpy as np
 from build_measurand.utils import _size_to_uint
 
-ARRAY_SIZE = 100
+ARRAY_SIZE = 2
 
 
 def _make_sample_data(word_size: int) -> np.ndarray:

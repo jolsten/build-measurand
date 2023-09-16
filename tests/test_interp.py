@@ -3,7 +3,6 @@ from hypothesis import given, assume, strategies as st
 import numpy as np
 from build_measurand.utils import _size_to_uint
 from build_measurand.interp import (
-    interp,
     Unsigned,
     OnesComplement,
     TwosComplement,
