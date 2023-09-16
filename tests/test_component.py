@@ -124,7 +124,8 @@ def test_component_invalid_spec(spec):
 )
 def test_component_build(spec, result):
     c = make_component(spec)
-    assert list(c.build(SAMPLE_DATA[8])) == list([result] * ARRAY_SIZE)
+    out = c.build(SAMPLE_DATA[8])
+    assert list(out) == list([result] * ARRAY_SIZE)
 
 
 # @given(cst.component_spec(), st.sampled_from(SAMPLE_DATA.keys()))

@@ -89,16 +89,20 @@ class Component(BaseModel):
     def build(self, data: np.ndarray) -> np.ndarray:
         uint_dtype = _size_to_uint(self.word_size)
         tmp = data[:, self.word]
+        print("a", f"{tmp[0]:02x}")
 
         if self.mask:
             mask = np.array([self.mask], dtype=uint_dtype)
             tmp = np.bitwise_and(tmp, mask)
+        print("b", f"{tmp[0]:02x}")
+
+        if self.reverse:
+            tmp = _reverse_bits(tmp, self.size)
+        print("c", f"{tmp[0]:02x}")
 
         rshift = np.array([self.shift], dtype=uint_dtype)
         if rshift:
-            tmp = np.right_shift(tmp, rshift)
-
-        if self.reverse:
-            tmp = _reverse_bits(tmp, self.word_size, self.size)
+            tmp = np.right_shift(tmp, np.uint8(rshift))
+        print("d", f"{tmp[0]:02x}")
 
         return tmp

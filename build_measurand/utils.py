@@ -83,11 +83,17 @@ def _bit_range_to_mask_and_shift(lsb: int, msb: int) -> int:
 
 # Maybe try this one out
 def _reverse_bits(x: np.ndarray, actual_size: int) -> np.ndarray:
-    dtype = np.asanyarray(x).dtype
-    result = np.flip(np.packbits(np.flip(np.unpackbits(x.view(np.uint8)))).view(dtype))
+    print("c1", f"{x[0]:02x}")
+    x = np.ascontiguousarray(x)
+    print("c2", f"{x[0]:02x}")
+    dtype = x.dtype
+    result = np.packbits(np.flip(np.unpackbits(x.view(np.uint8)))).view(dtype)
+    print("c3", f"{x[0]:02x}")
     shift = result.dtype.itemsize * 8 - actual_size
+    print(actual_size, shift)
     if shift:
-        np.right_shift(result, shift)
+        np.right_shift(result, np.uint8(shift))
+    print("c4", f"{x[0]:02x}")
     return result
 
 
