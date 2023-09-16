@@ -14,6 +14,10 @@ class Measurand(BaseModel):
     euc: Optional[EUC] = None
     # sampling: Optional[Sampling] = None
 
+    @classmethod
+    def from_spec(cls, spec: str) -> "Measurand":
+        return make_measurand(spec)
+
 
 def make_measurand(spec: str) -> Measurand:
     parts = spec.split(";")
