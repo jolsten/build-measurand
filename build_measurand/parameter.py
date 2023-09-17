@@ -1,6 +1,8 @@
 from typing import Tuple
 from functools import cached_property
 import numpy as np
+import pyarrow as pa
+import pyarrow.compute as pac
 from pydantic import BaseModel, Field
 from .utils import _expand_component_range, _size_to_uint
 from .component import make_component, Component
@@ -35,6 +37,10 @@ class Parameter(BaseModel):
     def size(self) -> int:
         return sum([c.size for c in self.components])
 
+    @cached_property
+    def output_dtype(self) -> str:
+        return _size_to_uint(self.size)
+
     @classmethod
     def from_spec(cls, spec: str, word_size=word_size) -> "Parameter":
         return make_parameter(spec, word_size=word_size)
@@ -46,5 +52,18 @@ class Parameter(BaseModel):
         size = 0
         for comp in reversed(self.components):
             result += comp.build_ndarray(tmp).astype(dtype) << size
+            size += comp.size
+        return result
+
+    def build_paarray(self, data: pa.Table) -> pa.Array:
+        if not isinstance(data, pa.Table):
+            raise TypeError
+
+        result = pa.array(np.zeros(len(data), dtype=self.output_dtype))
+        size = 0
+        for comp in reversed(self.components):
+            tmp = comp.build_paarray(data).cast(self.output_dtype)
+            tmp = pac.shift_left(tmp, np.uint8(size))
+            result = pac.add(result, tmp)
             size += comp.size
         return result

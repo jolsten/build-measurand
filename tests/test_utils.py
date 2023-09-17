@@ -134,35 +134,35 @@ def test_size_to_uint_too_big(size):
 
 
 @pytest.mark.parametrize(
-    "input, output, dtype, word_size, size",
+    "input, output, dtype, word_size",
     [
-        (0x00, 0x00, "u1", 8, 8),
-        (0x0F, 0xF0, "u1", 8, 8),
-        (0xF0, 0x0F, "u1", 8, 8),
-        (0xFF, 0xFF, "u1", 8, 8),
-        (0x000, 0x000, "u2", 12, 12),
-        (0x00F, 0xF00, "u2", 12, 12),
-        (0xF00, 0x00F, "u2", 12, 12),
-        (0xFFF, 0xFFF, "u2", 12, 12),
-        (0x0000, 0x0000, "u2", 16, 16),
-        (0x000F, 0xF000, "u2", 16, 16),
-        (0xF000, 0x000F, "u2", 16, 16),
-        (0xFFFF, 0xFFFF, "u2", 16, 16),
-        (0x55, 0xAA, "u1", 8, 8),
-        (0xAA, 0x55, "u1", 8, 8),
-        (0x555, 0xAAA, "u2", 12, 12),
-        (0xAAA, 0x555, "u2", 12, 12),
-        (0x5555, 0xAAAA, "u2", 16, 16),
-        (0xAAAA, 0x5555, "u2", 16, 16),
+        (0x00, 0x00, "u1", 8),
+        (0x0F, 0xF0, "u1", 8),
+        (0xF0, 0x0F, "u1", 8),
+        (0xFF, 0xFF, "u1", 8),
+        (0x000, 0x000, "u2", 12),
+        (0x00F, 0xF00, "u2", 12),
+        (0xF00, 0x00F, "u2", 12),
+        (0xFFF, 0xFFF, "u2", 12),
+        (0x0000, 0x0000, "u2", 16),
+        (0x000F, 0xF000, "u2", 16),
+        (0xF000, 0x000F, "u2", 16),
+        (0xFFFF, 0xFFFF, "u2", 16),
+        (0x55, 0xAA, "u1", 8),
+        (0xAA, 0x55, "u1", 8),
+        (0x555, 0xAAA, "u2", 12),
+        (0xAAA, 0x555, "u2", 12),
+        (0x5555, 0xAAAA, "u2", 16),
+        (0xAAAA, 0x5555, "u2", 16),
     ],
 )
 class TestReverseBits:
-    def test_ndarray(self, input, output, dtype, word_size, size):
+    def test_ndarray(self, input, output, dtype, word_size):
         data = np.array([input] * ARRAY_SIZE, dtype=dtype)
-        assert list(_reverse_bits(data, size)) == list([output] * ARRAY_SIZE)
+        assert list(_reverse_bits(data, word_size)) == list([output] * ARRAY_SIZE)
 
-    def test_paarray(self, input, output, dtype, word_size, size):
+    def test_paarray(self, input, output, dtype, word_size):
         data = pa.array([input] * ARRAY_SIZE, type=dtype)
-        assert _reverse_bits_paarray(data, size).to_pylist() == list(
+        assert _reverse_bits_paarray(data, word_size).to_pylist() == list(
             [output] * ARRAY_SIZE
         )

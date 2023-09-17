@@ -5,7 +5,7 @@ import hypothesis.strategies as st
 from build_measurand.component import RE_COMPONENT, make_component
 from . import strategies as cst
 from .cases import Example, component_test_cases
-from .conftest import ARRAY_SIZE, SAMPLE_NDARRAY
+from .conftest import ARRAY_SIZE, SAMPLE_NDARRAY, SAMPLE_PAARRAY
 
 
 @given(
@@ -106,12 +106,20 @@ def test_component_invalid_spec(spec):
 
 @pytest.mark.parametrize("case", component_test_cases)
 class TestBuildComponent:
-    def test_component_build_ndarray(self, case: Example):
+    def test_build_ndarray(self, case: Example):
         c = make_component(
             case.spec, word_size=case.word_size, one_based=case.one_based
         )
         out = c.build_ndarray(SAMPLE_NDARRAY[case.word_size])
+        print(repr(out[0:2]))
         assert list(out) == list([case.result] * ARRAY_SIZE)
+
+    def test_build_paarray(self, case: Example):
+        c = make_component(
+            case.spec, word_size=case.word_size, one_based=case.one_based
+        )
+        out = c.build_paarray(SAMPLE_PAARRAY[case.word_size])
+        assert out.to_pylist() == list([case.result] * ARRAY_SIZE)
 
 
 @given(cst.word_and_word_size())

@@ -6,8 +6,19 @@ MAX_FRAME_SIZE = 4096
 MAX_PARAMETER_SIZE = 64
 
 valid_parameter_sizes = st.integers(min_value=1, max_value=64)
-
 bit_positions = st.integers(min_value=0, max_value=15)
+
+
+@st.composite
+def uint(draw, size: int):
+    return draw(st.integers(min_value=0, max_value=2**size - 1))
+
+
+@st.composite
+def uint_and_size(draw, max_size: int = 64):
+    size = draw(st.integers(min_value=1, max_value=max_size))
+    value = draw(uint(size))
+    return value, size
 
 
 @st.composite

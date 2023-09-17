@@ -1,13 +1,18 @@
 from abc import ABC, abstractmethod
-from typing import ClassVar, Optional
 import numpy as np
-from .factory import ObjectFactory
+import pyarrow as pa
+from typing import ClassVar, Optional
 import typeconvert.ufunc as tcu
+from .factory import ObjectFactory
 from .generic import MeasurandModifier
 
 
 class Interp(MeasurandModifier):
     SIZE: ClassVar[Optional[int]] = None
+
+    def apply_paarray(self, data: pa.Array, bits: int) -> pa.Array:
+        result = self.apply_ndarray(data.to_numpy(), bits)
+        return pa.array(result)
 
 
 class InvalidInterpType(ValueError):

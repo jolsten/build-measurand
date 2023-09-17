@@ -3,7 +3,7 @@ from hypothesis import given, assume, strategies as st
 from build_measurand.component import make_component
 from build_measurand.parameter import make_parameter
 from . import strategies as cst
-from .conftest import ARRAY_SIZE, SAMPLE_NDARRAY
+from .conftest import ARRAY_SIZE, SAMPLE_NDARRAY, SAMPLE_PAARRAY
 from .cases import Example, parameter_test_cases, component_test_cases
 
 
@@ -63,3 +63,11 @@ class TestBuildParameter:
         print("spec =", case.spec, "result =", f"{case.result:0{p.size}b}")
         out = p.build_ndarray(SAMPLE_NDARRAY[case.word_size])
         assert list(out) == list([case.result] * ARRAY_SIZE)
+
+    def test_build_paarray(self, case: Example):
+        p = make_parameter(
+            case.spec, word_size=case.word_size, one_based=case.one_based
+        )
+        print("spec =", case.spec, "result =", f"{case.result:0{p.size}b}")
+        out = p.build_paarray(SAMPLE_PAARRAY[case.word_size])
+        assert out.to_pylist() == list([case.result] * ARRAY_SIZE)

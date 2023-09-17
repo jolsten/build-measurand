@@ -2,12 +2,15 @@ import re
 from functools import cached_property
 from typing import Optional
 import numpy as np
+import pyarrow as pa
+import pyarrow.compute as pac
 from pydantic import BaseModel, Field
 from .utils import (
     _range_to_tuple,
     _bit_range_to_mask_and_shift,
     _size_to_uint,
     _reverse_bits,
+    _reverse_bits_paarray,
 )
 
 RE_COMPONENT = re.compile(
@@ -75,6 +78,14 @@ class Component(BaseModel):
             return f"{self.mask:b}".count("1")
         return self.word_size
 
+    @cached_property
+    def input_dtype(self) -> np.dtype:
+        return _size_to_uint(self.word_size)
+
+    @cached_property
+    def output_dtype(self) -> np.dtype:
+        return _size_to_uint(self.size)
+
     def __eq__(self, other: "Component") -> bool:
         return all(
             [
@@ -87,18 +98,31 @@ class Component(BaseModel):
         )
 
     def build_ndarray(self, data: np.ndarray) -> np.ndarray:
-        uint_dtype = _size_to_uint(self.word_size)
         tmp = data[:, self.word]
 
         if self.mask:
-            mask = np.array([self.mask], dtype=uint_dtype)
+            mask = np.array([self.mask], dtype=self.input_dtype)[0]
             tmp = np.bitwise_and(tmp, mask)
 
-        rshift = np.array([self.shift], dtype=uint_dtype)
-        if rshift:
-            tmp = np.right_shift(tmp, np.uint8(rshift))
+        if self.shift:
+            tmp = np.right_shift(tmp, np.uint8(self.shift))
 
         if self.reverse:
             tmp = _reverse_bits(tmp, self.size)
+
+        return tmp
+
+    def build_paarray(self, data: pa.Array) -> pa.Array:
+        tmp = data[self.word]
+
+        if self.mask:
+            mask = np.array([self.mask], dtype=self.input_dtype)[0]
+            tmp = pac.bit_wise_and(tmp, mask)
+
+        if self.shift:
+            tmp = pac.shift_right(tmp, np.uint8(self.shift))
+
+        if self.reverse:
+            tmp = _reverse_bits_paarray(tmp, self.size)
 
         return tmp

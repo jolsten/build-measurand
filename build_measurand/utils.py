@@ -72,21 +72,20 @@ def _reverse_bits(x: np.ndarray, size: int) -> np.ndarray:
     return result
 
 
-PA_ONE = pa.scalar(1, type="uint8")
 ONE = np.uint8(1)
 
 
 def _reverse_bits_paarray(arr: pa.Array, size: int) -> pa.Array:
+    dtype = _size_to_uint(size)
     if isinstance(arr, pa.ChunkedArray):
         result = pa.chunked_array(
-            [np.zeros(len(chunk), dtype=np.uint8) for chunk in arr.chunks]
+            [np.zeros(len(chunk), dtype=dtype) for chunk in arr.chunks]
         )
     else:
-        result = pa.array(np.zeros(len(arr), dtype=np.uint8))
+        result = pa.array(np.zeros(len(arr), dtype=dtype))
 
     for i in range(size):
         digit = pac.bit_wise_and(arr, ONE)
-        print(digit[0], digit.type)
         result = pac.add(result, digit)
         if i < size - 1:
             result = pac.shift_left(result, ONE)
