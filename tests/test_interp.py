@@ -121,16 +121,18 @@ def test_ti40(uint):
         (8, 0b11111111, 0, -1),
     ],
 )
-class TestOnesComplement:
+class TestSignedIntegers:
     def test_1c_3bit_ndarray(self, size, uint, int_1c, int_2c):
         strategy = OnesComplement()
         data = np.array([uint] * ARRAY_SIZE, dtype="u1")
-        assert list(strategy.apply_ndarray(data, size)) == [int_1c] * ARRAY_SIZE
+        results = strategy.apply_ndarray(data, size)
+        assert list(results) == [int_1c] * ARRAY_SIZE
 
     def test_1c_3bit_paarray(self, size, uint, int_1c, int_2c):
         strategy = OnesComplement()
         data = pa.array(np.array([uint] * ARRAY_SIZE, dtype="u1"))
-        assert strategy.apply_paarray(data, size).to_pylist() == [int_1c] * ARRAY_SIZE
+        results = strategy.apply_paarray(data, size)
+        assert results.to_pylist() == [int_1c] * ARRAY_SIZE
 
     def test_2c_3bit_ndarray(self, size, uint, int_1c, int_2c):
         strategy = TwosComplement()
