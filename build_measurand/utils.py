@@ -1,18 +1,19 @@
 import re
 from typing import Tuple
 import numpy as np
+import pyarrow as pa
 from numpy.typing import DTypeLike
 
 
 def _size_to_uint(size: int) -> DTypeLike:
     if size <= 8:
-        return np.dtype("u1")
+        return np.dtype(np.uint8)
     elif size <= 16:
-        return np.dtype("u2")
+        return np.dtype(np.uint16)
     elif size <= 32:
-        return np.dtype("u4")
+        return np.dtype(np.uint32)
     elif size <= 64:
-        return np.dtype("u8")
+        return np.dtype(np.uint64)
     raise ValueError
 
 
@@ -56,38 +57,14 @@ def _bit_range_to_mask_and_shift(lsb: int, msb: int) -> int:
     return mask, shift
 
 
-# def _reverse_bits(
-#     data: np.ndarray,
-#     word_size: int,
-#     result_size: int,
-# ) -> np.ndarray:
-#     input_dtype = data.dtype
-#     data = np.atleast_3d(data).view("u1")
-#     print("input_dtype =", input_dtype)
-#     print('view("u1").dtype =', data.dtype)
-#     bits = np.unpackbits(
-#         data,
-#         axis=2,
-#         count=word_size,
-#         bitorder="little",
-#     )
-#     data = np.packbits(bits, axis=-1, bitorder="big")
-#     print(data.dtype, data.shape)
-#     print(repr(data))
-#     data = data.view(input_dtype).byteswap().flatten()
-#     reverse_rshift = _size_to_uint(word_size).itemsize * 8 - result_size
-#     if reverse_rshift:
-#         data = data >> reverse_rshift
-#     return data
-
-
-# Maybe try this one out
 def _reverse_bits(x: np.ndarray, actual_size: int) -> np.ndarray:
-    dtype = np.asanyarray(x).dtype
     tmp = np.ascontiguousarray(x)
-    tmp = tmp.view(np.uint8)
-    tmp = np.packbits(np.flip(np.unpackbits(tmp)))
-    result = np.flip(np.ascontiguousarray(tmp).view(dtype))
+    dtype = x.dtype
+    result = np.flip(
+        np.ascontiguousarray(
+            np.packbits(np.flip(np.unpackbits(tmp.view(np.uint8))))
+        ).view(dtype)
+    )
     shift = result.dtype.itemsize * 8 - actual_size
     if shift:
         result = np.right_shift(result, np.uint8(shift))
@@ -103,3 +80,9 @@ def _range_to_tuple(spec: str) -> Tuple[int, int]:
         if a > b:
             a, b = b, a
         return a, b
+
+
+def _numpy_2d_array_to_arrow_table(array: np.ndarray) -> pa.Table:
+    arrays = [pa.array(col) for col in array.T]
+    table = pa.Table.from_arrays(arrays, names=[str(i) for i in range(len(arrays))])
+    return table

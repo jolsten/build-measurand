@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import ClassVar, Optional
 import numpy as np
 from .factory import ObjectFactory
+import typeconvert.ufunc as tcu
 from .types.ufunc import (
     onescomp,
     twoscomp,
@@ -51,13 +52,13 @@ class Unsigned(Interp):
 @interp.register("1c")
 class OnesComplement(Interp):
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
-        return onescomp(data, bits)
+        return tcu.onescomp(data, bits)
 
 
 @interp.register("2c")
 class TwosComplement(Interp):
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
-        return twoscomp(data, bits)
+        return tcu.twoscomp(data, bits)
 
 
 @interp.register("ieee16")
@@ -97,7 +98,7 @@ class MilStd1750A32(Interp):
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
         if bits != self.SIZE:
             raise InvalidInterpSize(self.__class__, self.SIZE, bits)
-        return milstd1750a32(data)
+        return tcu.milstd1750a32(data)
 
 
 @interp.register("1750a48")
@@ -107,7 +108,7 @@ class MilStd1750A48(Interp):
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
         if bits != self.SIZE:
             raise InvalidInterpSize(self.__class__, self.SIZE, bits)
-        return milstd1750a48(data)
+        return tcu.milstd1750a48(data)
 
 
 @interp.register("ti32")
@@ -117,7 +118,7 @@ class TI32(Interp):
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
         if bits != self.SIZE:
             raise InvalidInterpSize(self.__class__, self.SIZE, bits)
-        return ti32(data)
+        return tcu.ti32(data)
 
 
 @interp.register("ti40")
@@ -127,7 +128,7 @@ class TI40(Interp):
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
         if bits != self.SIZE:
             raise InvalidInterpSize(self.__class__, self.SIZE, bits)
-        return ti40(data)
+        return tcu.ti40(data)
 
 
 @interp.register("ibm32")
@@ -137,7 +138,7 @@ class IBM32(Interp):
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
         if bits != self.SIZE:
             raise InvalidInterpSize(self.__class__, self.SIZE, bits)
-        return ibm32(data)
+        return tcu.ibm32(data)
 
 
 @interp.register("ibm64")
@@ -147,7 +148,7 @@ class IBM64(Interp):
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
         if bits != self.SIZE:
             raise InvalidInterpSize(self.__class__, self.SIZE, bits)
-        return ibm64(data)
+        return tcu.ibm64(data)
 
 
 @interp.register("dec32")
@@ -157,7 +158,7 @@ class DEC32(Interp):
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
         if bits != self.SIZE:
             raise InvalidInterpSize(self.__class__, self.SIZE, bits)
-        return dec32(data)
+        return tcu.dec32(data)
 
 
 @interp.register("dec64")
@@ -167,7 +168,7 @@ class DEC64(Interp):
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
         if bits != self.SIZE:
             raise InvalidInterpSize(self.__class__, self.SIZE, bits)
-        return dec64(data)
+        return tcu.dec64(data)
 
 
 @interp.register("dec64g")
@@ -177,7 +178,7 @@ class DEC64G(Interp):
     def apply_ndarray(self, data: np.ndarray, bits: int) -> np.ndarray:
         if bits != self.SIZE:
             raise InvalidInterpSize(self.__class__, self.SIZE, bits)
-        return dec64g(data)
+        return tcu.dec64g(data)
 
 
 def make_interp(spec: str) -> Interp:
