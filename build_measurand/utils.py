@@ -1,23 +1,24 @@
 import re
-from typing import Tuple
+from typing import List, Tuple
 import numpy as np
 import pyarrow as pa
+import pyarrow.compute as pac
 from numpy.typing import DTypeLike
 
 
 def _size_to_uint(size: int) -> DTypeLike:
     if size <= 8:
-        return np.dtype(np.uint8)
+        return "uint8"
     elif size <= 16:
-        return np.dtype(np.uint16)
+        return "uint16"
     elif size <= 32:
-        return np.dtype(np.uint32)
+        return "uint32"
     elif size <= 64:
-        return np.dtype(np.uint64)
+        return "uint64"
     raise ValueError
 
 
-def _expand_list(list_spec: str) -> list:
+def _expand_list(list_spec: str) -> List[int]:
     if "-" in list_spec:
         a, b = list_spec.split("-")
 
@@ -57,7 +58,7 @@ def _bit_range_to_mask_and_shift(lsb: int, msb: int) -> int:
     return mask, shift
 
 
-def _reverse_bits(x: np.ndarray, actual_size: int) -> np.ndarray:
+def _reverse_bits(x: np.ndarray, size: int) -> np.ndarray:
     tmp = np.ascontiguousarray(x)
     dtype = x.dtype
     result = np.flip(
@@ -65,10 +66,44 @@ def _reverse_bits(x: np.ndarray, actual_size: int) -> np.ndarray:
             np.packbits(np.flip(np.unpackbits(tmp.view(np.uint8))))
         ).view(dtype)
     )
-    shift = result.dtype.itemsize * 8 - actual_size
+    shift = result.dtype.itemsize * 8 - size
     if shift:
         result = np.right_shift(result, np.uint8(shift))
     return result
+
+
+PA_ONE = pa.scalar(1, type="uint8")
+ONE = np.uint8(1)
+
+
+def _reverse_bits_paarray(arr: pa.Array, size: int) -> pa.Array:
+    if isinstance(arr, pa.ChunkedArray):
+        result = pa.chunked_array(
+            [np.zeros(len(chunk), dtype=np.uint8) for chunk in arr.chunks]
+        )
+    else:
+        result = pa.array(np.zeros(len(arr), dtype=np.uint8))
+
+    for i in range(size):
+        digit = pac.bit_wise_and(arr, ONE)
+        print(digit[0], digit.type)
+        result = pac.add(result, digit)
+        if i < size - 1:
+            result = pac.shift_left(result, ONE)
+            arr = pac.shift_right(arr, ONE)
+    return result
+
+
+# def _reverse_bits_paarray(arr: pa.Array, size: int):
+#     result = pa.chunked_array(
+#         [np.zeros(len(chunk), dtype=np.uint8) for chunk in arr.chunks]
+#     )
+#     for i in range(size):
+#         result = pac.add(result, pac.bit_wise_and(arr, 1))
+#         if i < size - 1:
+#             result = pac.shift_left(result, 1)
+#             arr = pac.shift_right(arr, 1)
+#     return result
 
 
 def _range_to_tuple(spec: str) -> Tuple[int, int]:

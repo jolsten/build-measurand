@@ -1,5 +1,6 @@
 import pytest
 import numpy as np
+import pyarrow as pa
 from hypothesis import given, assume, strategies as st
 from build_measurand.utils import (
     _range_to_tuple,
@@ -7,6 +8,7 @@ from build_measurand.utils import (
     _bit_range_to_mask_and_shift,
     _size_to_uint,
     _reverse_bits,
+    _reverse_bits_paarray,
     _expand_component_range,
 )
 from tests.conftest import ARRAY_SIZE
@@ -121,13 +123,14 @@ def test_bit_spec_to_mask_and_rshift_exception(a, b):
 
 @given(st.integers(min_value=1, max_value=64))
 def test_size_to_uint(size):
-    dtype = _size_to_uint(size)
+    dtype = np.dtype(_size_to_uint(size))
     assert size / (dtype.itemsize * 8) <= 1.0
 
 
-def test_size_to_uint_too_big():
+@given(st.integers(min_value=65, max_value=128))
+def test_size_to_uint_too_big(size):
     with pytest.raises(ValueError):
-        _size_to_uint(69)
+        _size_to_uint(size)
 
 
 @pytest.mark.parametrize(
@@ -153,6 +156,13 @@ def test_size_to_uint_too_big():
         (0xAAAA, 0x5555, "u2", 16, 16),
     ],
 )
-def test_bit_reverser(input, output, dtype, word_size, size):
-    data = np.array([input] * ARRAY_SIZE, dtype=dtype)
-    assert list(_reverse_bits(data, actual_size=size)) == list([output] * ARRAY_SIZE)
+class TestReverseBits:
+    def test_ndarray(self, input, output, dtype, word_size, size):
+        data = np.array([input] * ARRAY_SIZE, dtype=dtype)
+        assert list(_reverse_bits(data, size)) == list([output] * ARRAY_SIZE)
+
+    def test_paarray(self, input, output, dtype, word_size, size):
+        data = pa.array([input] * ARRAY_SIZE, type=dtype)
+        assert _reverse_bits_paarray(data, size).to_pylist() == list(
+            [output] * ARRAY_SIZE
+        )
