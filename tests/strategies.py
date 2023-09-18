@@ -10,6 +10,11 @@ bit_positions = st.integers(min_value=0, max_value=15)
 
 
 @st.composite
+def euc_float(draw):
+    return draw(st.floats(min_value=1e-12, max_value=1e12))
+
+
+@st.composite
 def uint(draw, size: int):
     return draw(st.integers(min_value=0, max_value=2**size - 1))
 

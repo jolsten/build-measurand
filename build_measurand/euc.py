@@ -2,6 +2,8 @@ import re
 from functools import cached_property
 from typing import Callable, Optional, Annotated, Union
 import numpy as np
+import pyarrow as pa
+import pyarrow.compute as pc
 from pydantic import BaseModel, BeforeValidator
 from .generic import MeasurandModifier
 
@@ -84,6 +86,27 @@ class ScaleFactorEUC(EUC):
 
         if self.scaled_bias is not None:
             data += self.scaled_bias
+
+        return data
+
+    def apply_paarray(self, data: pa.Array, bits: int) -> pa.Array:
+        dtype = pa.from_numpy_dtype(np.dtype(">f8"))
+
+        # If the data is not already floating, and the EUC is not a No-Op:
+        # Convert the data to float
+        if not pa.types.is_floating(data.type) and any(
+            v is not None for v in (self.data_bias, self.scale_factor, self.scaled_bias)
+        ):
+            data = data.cast(dtype)
+
+        if self.data_bias is not None:
+            data = pc.add(data, pa.scalar(self.data_bias, type=dtype))
+
+        if self.scale_factor is not None:
+            data = pc.multiply(data, pa.scalar(self.scale_factor, type=dtype))
+
+        if self.scaled_bias is not None:
+            data = pc.add(data, pa.scalar(self.scaled_bias, type=dtype))
 
         return data
 
