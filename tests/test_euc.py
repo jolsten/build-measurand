@@ -39,7 +39,7 @@ def test_make_euc_scalefactor(db, sf, sb):
 )
 def test_euc_apply_ndarray(val: int, db: float, sf: float, sb: float):
     euc = ScaleFactorEUC(data_bias=db, scale_factor=sf, scaled_bias=sb)
-    data = np.array([val] * 10, dtype="u1")
+    data = np.array([val] * ARRAY_SIZE, dtype="u1")
     result = euc.apply_ndarray(data, 8)
     answer = (data.astype("f8") + db) * sf + sb
     assert result.tolist() == pytest.approx(answer.tolist())
