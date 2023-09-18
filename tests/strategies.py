@@ -1,6 +1,6 @@
 from typing import List
 from hypothesis import strategies as st
-from build_measurand.component import Component
+from build_measurand.interp import interp
 
 MAX_FRAME_SIZE = 4096
 MAX_PARAMETER_SIZE = 64
@@ -76,3 +76,14 @@ def parameter_spec(
         )
     )
     return "[" + "+".join(components) + "]"
+
+
+@st.composite
+def interp_spec(draw):
+    return draw(st.sampled_from(interp.registry.keys()))
+
+
+@st.composite
+def euc_scalefactor_spec(draw):
+    parts = draw(st.lists(euc_float(), min_size=1, max_size=3))
+    return f"EUC[{','.join(parts)}]"
