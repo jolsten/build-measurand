@@ -82,10 +82,6 @@ class Component(BaseModel):
     def input_dtype(self) -> np.dtype:
         return _size_to_uint(self.word_size)
 
-    @cached_property
-    def output_dtype(self) -> np.dtype:
-        return _size_to_uint(self.size)
-
     def __eq__(self, other: "Component") -> bool:
         return all(
             [
@@ -97,7 +93,7 @@ class Component(BaseModel):
             ]
         )
 
-    def build_ndarray(self, data: np.ndarray) -> np.ndarray:
+    def _build_ndarray(self, data: np.ndarray) -> np.ndarray:
         tmp = data[:, self.word]
 
         if self.mask:
@@ -112,7 +108,7 @@ class Component(BaseModel):
 
         return tmp
 
-    def build_paarray(self, data: pa.Array) -> pa.Array:
+    def _build_paarray(self, data: pa.Array) -> pa.Array:
         tmp = data[self.word]
 
         if self.mask:

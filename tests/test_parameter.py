@@ -61,7 +61,7 @@ class TestBuildParameter:
             case.spec, word_size=case.word_size, one_based=case.one_based
         )
         print("spec =", case.spec, "result =", f"{case.result:0{p.size}b}")
-        out = p.build_ndarray(SAMPLE_NDARRAY[case.word_size])
+        out = p._build_ndarray(SAMPLE_NDARRAY[case.word_size])
         assert list(out) == list([case.result] * ARRAY_SIZE)
 
     def test_build_paarray(self, case: Example):
@@ -69,5 +69,5 @@ class TestBuildParameter:
             case.spec, word_size=case.word_size, one_based=case.one_based
         )
         print("spec =", case.spec, "result =", f"{case.result:0{p.size}b}")
-        out = p.build_paarray(SAMPLE_PAARRAY[case.word_size])
+        out = p._build_paarray(SAMPLE_PAARRAY[case.word_size])
         assert out.to_pylist() == list([case.result] * ARRAY_SIZE)

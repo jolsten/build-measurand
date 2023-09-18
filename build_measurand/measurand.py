@@ -7,7 +7,6 @@ from .parameter import Parameter, make_parameter
 from .interp import Interp, make_interp
 from .euc import EUC, make_euc
 
-# from .scale import ScaleFactor
 # from .sampling import SamplingStrategy
 
 
@@ -25,8 +24,8 @@ class Measurand(BaseModel):
     def from_spec(cls, spec: str) -> "Measurand":
         return make_measurand(spec)
 
-    def build_ndarray(self, data: np.ndarray) -> np.ndarray:
-        tmp = self.parameter.build_ndarray(data)
+    def _build_ndarray(self, data: np.ndarray) -> np.ndarray:
+        tmp = self.parameter._build_ndarray(data)
 
         if self.interp:
             tmp = self.interp.apply_ndarray(tmp, self.parameter.size)
@@ -36,8 +35,8 @@ class Measurand(BaseModel):
 
         return tmp
 
-    def build_paarray(self, data: pa.Table) -> pa.Array:
-        tmp = self.parameter.build_paarray(data)
+    def _build_paarray(self, data: pa.Table) -> pa.Array:
+        tmp = self.parameter._build_paarray(data)
 
         if self.interp:
             tmp = self.interp.apply_paarray(tmp, self.parameter.size)

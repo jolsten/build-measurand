@@ -110,7 +110,7 @@ class TestBuildComponent:
         c = make_component(
             case.spec, word_size=case.word_size, one_based=case.one_based
         )
-        out = c.build_ndarray(SAMPLE_NDARRAY[case.word_size])
+        out = c._build_ndarray(SAMPLE_NDARRAY[case.word_size])
         print(repr(out[0:2]))
         assert list(out) == list([case.result] * ARRAY_SIZE)
 
@@ -118,7 +118,7 @@ class TestBuildComponent:
         c = make_component(
             case.spec, word_size=case.word_size, one_based=case.one_based
         )
-        out = c.build_paarray(SAMPLE_PAARRAY[case.word_size])
+        out = c._build_paarray(SAMPLE_PAARRAY[case.word_size])
         assert out.to_pylist() == list([case.result] * ARRAY_SIZE)
 
 
@@ -126,6 +126,6 @@ class TestBuildComponent:
 def test_parameter(word_and_word_size):
     word, word_size = word_and_word_size
     p = make_component(f"{word}", word_size=word_size)
-    assert list(p.build_ndarray(SAMPLE_NDARRAY[word_size])) == list(
+    assert list(p._build_ndarray(SAMPLE_NDARRAY[word_size])) == list(
         [word % 2**word_size] * ARRAY_SIZE
     )

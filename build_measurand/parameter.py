@@ -45,24 +45,24 @@ class Parameter(BaseModel):
     def from_spec(cls, spec: str, word_size=word_size) -> "Parameter":
         return make_parameter(spec, word_size=word_size)
 
-    def build_ndarray(self, data: np.ndarray) -> np.ndarray:
+    def _build_ndarray(self, data: np.ndarray) -> np.ndarray:
         tmp = np.atleast_2d(data)
         dtype = _size_to_uint(self.size)
         result = np.zeros(tmp.shape[0], dtype=dtype)
         size = 0
         for comp in reversed(self.components):
-            result += comp.build_ndarray(tmp).astype(dtype) << size
+            result += comp._build_ndarray(tmp).astype(dtype) << size
             size += comp.size
         return result
 
-    def build_paarray(self, data: pa.Table) -> pa.Array:
+    def _build_paarray(self, data: pa.Table) -> pa.Array:
         if not isinstance(data, pa.Table):
             raise TypeError
 
         result = pa.array(np.zeros(len(data), dtype=self.output_dtype))
         size = 0
         for comp in reversed(self.components):
-            tmp = comp.build_paarray(data).cast(self.output_dtype)
+            tmp = comp._build_paarray(data).cast(self.output_dtype)
             tmp = pac.shift_left(tmp, np.uint8(size))
             result = pac.add(result, tmp)
             size += comp.size
