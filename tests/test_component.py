@@ -1,8 +1,7 @@
-from typing import List
 import pytest
 from hypothesis import given
 import hypothesis.strategies as st
-from build_measurand.component import RE_COMPONENT, make_component
+from build_measurand.component import _RE_COMPONENT, make_component
 from . import strategies as cst
 from .cases import Example, component_test_cases
 from .conftest import ARRAY_SIZE, SAMPLE_NDARRAY, SAMPLE_PAARRAY
@@ -12,7 +11,7 @@ from .conftest import ARRAY_SIZE, SAMPLE_NDARRAY, SAMPLE_PAARRAY
     cst.component_spec(),
 )
 def test_re_component(spec):
-    assert RE_COMPONENT.match(spec)
+    assert _RE_COMPONENT.match(spec)
 
 
 @given(
@@ -31,7 +30,7 @@ def test_re_component_with_bits(word, bits, reversed):
         bits = f"{a}-{b}"
     spec2 = f'{word}:{bits}{"R" if reversed else ""}'
     print(spec2)
-    assert RE_COMPONENT.match(spec2)
+    assert _RE_COMPONENT.match(spec2)
 
 
 @given(cst.word(one_based=True))

@@ -4,7 +4,7 @@ from typing import Callable, Optional, Annotated, Union
 import numpy as np
 import pyarrow as pa
 import pyarrow.compute as pc
-from pydantic import BaseModel, BeforeValidator
+from pydantic import BeforeValidator
 from .generic import MeasurandModifier
 
 RE_SCALEFACTOR = re.compile(
@@ -14,7 +14,7 @@ RE_SCALEFACTOR = re.compile(
 RE_FLOAT = re.compile(r"[\d\.\+\-\*\/]+")
 
 
-def validate_float(spec: str) -> float:
+def _validate_float(spec: str) -> float:
     try:
         return np.float32(float(spec))
     except ValueError:
@@ -25,7 +25,7 @@ def validate_float(spec: str) -> float:
     raise ValueError
 
 
-Float = Annotated[float, BeforeValidator(validate_float)]
+Float = Annotated[float, BeforeValidator(_validate_float)]
 
 
 class EUC(MeasurandModifier):

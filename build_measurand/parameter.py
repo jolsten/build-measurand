@@ -8,18 +8,6 @@ from .utils import _expand_component_range, _size_to_uint
 from .component import make_component, Component
 
 
-def make_parameter(
-    spec: str, word_size: int = 8, one_based: bool = True
-) -> "Parameter":
-    raw_param = _expand_component_range(spec)
-    components = [
-        make_component(s, one_based=one_based, word_size=word_size)
-        for s in raw_param.split("+")
-    ]
-    print(components)
-    return Parameter(components=components, word_size=word_size, one_based=one_based)
-
-
 class Parameter(BaseModel):
     components: Tuple[Component, ...]
     one_based: bool = Field(default=True, frozen=True)
@@ -67,3 +55,12 @@ class Parameter(BaseModel):
             result = pac.add(result, tmp)
             size += comp.size
         return result
+
+
+def make_parameter(spec: str, word_size: int = 8, one_based: bool = True) -> Parameter:
+    raw_param = _expand_component_range(spec)
+    components = [
+        make_component(s, one_based=one_based, word_size=word_size)
+        for s in raw_param.split("+")
+    ]
+    return Parameter(components=components, word_size=word_size, one_based=one_based)

@@ -1,10 +1,8 @@
-from abc import ABC, abstractmethod
 import numpy as np
 import pyarrow as pa
 from typing import ClassVar, Optional
 import typeconvert.ufunc as tcu
-from .factory import ObjectFactory
-from .generic import MeasurandModifier
+from .generic import ObjectFactory, MeasurandModifier
 
 
 class Interp(MeasurandModifier):

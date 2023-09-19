@@ -9,11 +9,11 @@ from .utils import (
     _range_to_tuple,
     _bit_range_to_mask_and_shift,
     _size_to_uint,
-    _reverse_bits,
+    _reverse_bits_ndarray,
     _reverse_bits_paarray,
 )
 
-RE_COMPONENT = re.compile(
+_RE_COMPONENT = re.compile(
     r"^\[?(?P<W>\d+(?:-\d+)?)(?:\:(?P<B>\d+(?:-\d+)?))?(?P<R>R)?\]?$", re.IGNORECASE
 )
 
@@ -26,7 +26,7 @@ def make_component(
     mask = None
     shift = 0
 
-    if m := RE_COMPONENT.match(spec):
+    if m := _RE_COMPONENT.match(spec):
         word = int(m.group("W"))
 
         if one_based:
@@ -104,7 +104,7 @@ class Component(BaseModel):
             tmp = np.right_shift(tmp, np.uint8(self.shift))
 
         if self.reverse:
-            tmp = _reverse_bits(tmp, self.size)
+            tmp = _reverse_bits_ndarray(tmp, self.size)
 
         return tmp
 

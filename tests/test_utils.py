@@ -7,7 +7,7 @@ from build_measurand.utils import (
     _expand_list,
     _bit_range_to_mask_and_shift,
     _size_to_uint,
-    _reverse_bits,
+    _reverse_bits_ndarray,
     _reverse_bits_paarray,
     _expand_component_range,
 )
@@ -159,7 +159,9 @@ def test_size_to_uint_too_big(size):
 class TestReverseBits:
     def test_ndarray(self, input, output, dtype, word_size):
         data = np.array([input] * ARRAY_SIZE, dtype=dtype)
-        assert list(_reverse_bits(data, word_size)) == list([output] * ARRAY_SIZE)
+        assert list(_reverse_bits_ndarray(data, word_size)) == list(
+            [output] * ARRAY_SIZE
+        )
 
     def test_paarray(self, input, output, dtype, word_size):
         data = pa.array([input] * ARRAY_SIZE, type=dtype)

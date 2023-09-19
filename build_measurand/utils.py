@@ -58,7 +58,7 @@ def _bit_range_to_mask_and_shift(lsb: int, msb: int) -> int:
     return mask, shift
 
 
-def _reverse_bits(x: np.ndarray, size: int) -> np.ndarray:
+def _reverse_bits_ndarray(x: np.ndarray, size: int) -> np.ndarray:
     tmp = np.ascontiguousarray(x)
     dtype = x.dtype
     result = np.flip(

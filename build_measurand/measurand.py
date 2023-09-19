@@ -2,7 +2,7 @@ from functools import cached_property
 from typing import List, Optional
 import numpy as np
 import pyarrow as pa
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from .parameter import Parameter, make_parameter
 from .interp import Interp, make_interp
 from .euc import EUC, make_euc
