@@ -3,7 +3,7 @@ from typing import List, Optional
 import numpy as np
 import pyarrow as pa
 from pydantic import BaseModel
-from .parameter import Parameter, make_parameter
+from .parameter import DataArray, Parameter, make_parameter
 from .interp import Interp, make_interp
 from .euc import EUC, make_euc
 
@@ -23,6 +23,13 @@ class Measurand(BaseModel):
     @classmethod
     def from_spec(cls, spec: str) -> "Measurand":
         return make_measurand(spec)
+
+    def build(self, data: DataArray) -> DataArray:
+        if isinstance(data, np.ndarray):
+            return self._build_ndarray(data)
+        if isinstance(data, pa.Table):
+            return self._build_paarray(data)
+        raise TypeError
 
     def _build_ndarray(self, data: np.ndarray) -> np.ndarray:
         tmp = self.parameter._build_ndarray(data)

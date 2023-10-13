@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Union
 from functools import cached_property
 import numpy as np
 import pyarrow as pa
@@ -6,6 +6,8 @@ import pyarrow.compute as pac
 from pydantic import BaseModel, Field
 from .utils import _expand_component_range, _size_to_uint
 from .component import make_component, Component
+
+DataArray = Union[np.ndarray, pa.Table]
 
 
 class Parameter(BaseModel):
@@ -32,6 +34,13 @@ class Parameter(BaseModel):
     @classmethod
     def from_spec(cls, spec: str, word_size=word_size) -> "Parameter":
         return make_parameter(spec, word_size=word_size)
+
+    def build(self, data: DataArray) -> DataArray:
+        if isinstance(data, np.ndarray):
+            return self._build_ndarray(data)
+        if isinstance(data, pa.Table):
+            return self._build_paarray(data)
+        raise TypeError
 
     def _build_ndarray(self, data: np.ndarray) -> np.ndarray:
         tmp = np.atleast_2d(data)
