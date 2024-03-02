@@ -1,6 +1,7 @@
-from abc import ABC, abstractmethod
 import functools
-from typing import Dict, Any
+from abc import ABC, abstractmethod
+from typing import Any, Dict
+
 import numpy as np
 import pyarrow as pa
 from pydantic import BaseModel, ConfigDict

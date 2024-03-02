@@ -1,11 +1,12 @@
-from functools import cached_property
-from typing import List, Optional
+from typing import Optional
+
 import numpy as np
 import pyarrow as pa
 from pydantic import BaseModel
-from .parameter import DataArray, Parameter, make_parameter
-from .interp import Interp, make_interp
-from .euc import EUC, make_euc
+
+from build_measurand.euc import EUC, make_euc
+from build_measurand.interp import Interp, make_interp
+from build_measurand.parameter import DataArray, Parameter, make_parameter
 
 # from .sampling import SamplingStrategy
 
@@ -16,7 +17,6 @@ class Measurand(BaseModel):
     euc: Optional[EUC] = None
     # sampling: Optional[Sampling] = None
 
-    @cached_property
     def size(self) -> int:
         return self.parameter.size
 

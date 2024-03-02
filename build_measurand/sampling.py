@@ -1,7 +1,9 @@
 from typing import Literal
+
 import numpy as np
 import pyarrow as pa
-from .generic import MeasurandModifier
+
+from build_measurand.generic import MeasurandModifier
 
 SamplingStrategy = Literal["mean", "mode", "max", "min"]
 

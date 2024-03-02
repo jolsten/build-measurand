@@ -1,16 +1,18 @@
 import re
 from functools import cached_property
 from typing import Optional
+
 import numpy as np
 import pyarrow as pa
 import pyarrow.compute as pac
 from pydantic import BaseModel, Field
+
 from .utils import (
-    _range_to_tuple,
     _bit_range_to_mask_and_shift,
-    _size_to_uint,
+    _range_to_tuple,
     _reverse_bits_ndarray,
     _reverse_bits_paarray,
+    _size_to_uint,
 )
 
 _RE_COMPONENT = re.compile(

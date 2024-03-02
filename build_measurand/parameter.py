@@ -1,11 +1,13 @@
-from typing import Tuple, Union
 from functools import cached_property
+from typing import Tuple, Union
+
 import numpy as np
 import pyarrow as pa
 import pyarrow.compute as pac
 from pydantic import BaseModel, Field
-from .utils import _expand_component_range, _size_to_uint
-from .component import make_component, Component
+
+from build_measurand.component import Component, make_component
+from build_measurand.utils import _expand_component_range, _size_to_uint
 
 DataArray = Union[np.ndarray, pa.Table]
 

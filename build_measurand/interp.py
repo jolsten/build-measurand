@@ -1,8 +1,10 @@
+from typing import ClassVar, Optional
+
 import numpy as np
 import pyarrow as pa
-from typing import ClassVar, Optional
 import typeconvert.ufunc as tcu
-from .generic import ObjectFactory, MeasurandModifier
+
+from build_measurand.generic import MeasurandModifier, ObjectFactory
 
 
 class Interp(MeasurandModifier):

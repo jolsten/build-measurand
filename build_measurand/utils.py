@@ -1,5 +1,6 @@
 import re
 from typing import List, Tuple
+
 import numpy as np
 import pyarrow as pa
 import pyarrow.compute as pac
@@ -91,18 +92,6 @@ def _reverse_bits_paarray(arr: pa.Array, size: int) -> pa.Array:
             result = pac.shift_left(result, ONE)
             arr = pac.shift_right(arr, ONE)
     return result
-
-
-# def _reverse_bits_paarray(arr: pa.Array, size: int):
-#     result = pa.chunked_array(
-#         [np.zeros(len(chunk), dtype=np.uint8) for chunk in arr.chunks]
-#     )
-#     for i in range(size):
-#         result = pac.add(result, pac.bit_wise_and(arr, 1))
-#         if i < size - 1:
-#             result = pac.shift_left(result, 1)
-#             arr = pac.shift_right(arr, 1)
-#     return result
 
 
 def _range_to_tuple(spec: str) -> Tuple[int, int]:
