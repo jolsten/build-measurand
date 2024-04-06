@@ -1,10 +1,9 @@
 import pytest
-from hypothesis import given, assume, strategies as st
-from build_measurand.parameter import make_parameter
-from build_measurand.measurand import make_measurand
-from . import strategies as cst
+
+from measurand.measurand import make_measurand
+
+from .cases import Example, parameter_test_cases
 from .conftest import ARRAY_SIZE, SAMPLE_NDARRAY, SAMPLE_PAARRAY
-from .cases import Example, parameter_test_cases, component_test_cases
 
 
 @pytest.mark.parametrize("case", parameter_test_cases)

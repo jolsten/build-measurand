@@ -1,7 +1,9 @@
+import hypothesis.strategies as st
 import pytest
 from hypothesis import given
-import hypothesis.strategies as st
-from build_measurand.component import _RE_COMPONENT, make_component
+
+from measurand.component import _RE_COMPONENT, make_component
+
 from . import strategies as cst
 from .cases import Example, component_test_cases
 from .conftest import ARRAY_SIZE, SAMPLE_NDARRAY, SAMPLE_PAARRAY

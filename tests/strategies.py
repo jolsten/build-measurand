@@ -1,6 +1,8 @@
 from typing import List
+
 from hypothesis import strategies as st
-from build_measurand.interp import interp
+
+from measurand.interp import interp
 
 MAX_FRAME_SIZE = 4096
 MAX_PARAMETER_SIZE = 64

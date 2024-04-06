@@ -6,8 +6,8 @@ import pyarrow as pa
 import pyarrow.compute as pac
 from pydantic import BaseModel, Field
 
-from build_measurand.component import Component, make_component
-from build_measurand.utils import _expand_component_range, _size_to_uint
+from measurand.component import Component, make_component
+from measurand.utils import _expand_component_range, _size_to_uint
 
 DataArray = Union[np.ndarray, pa.Table]
 

@@ -3,16 +3,14 @@ requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "build-measurand"
+name = "measurand"
 authors = [{ name = "Jonathan Olsten", email = "jonathan.olsten@gmail.com" }]
 description = "Build arbitrary parameters from binary data"
 readme = "README.md"
 requires-python = ">=3.8"
 keywords = []
-license = { text = "MIT" }
 classifiers = [
     "Development Status :: 4 - Beta",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
@@ -32,16 +30,19 @@ dev = [
     "pytest",
     "pytest-cov",
     "hypothesis",
-    "sphinx",
-    "sphinx-rtd-theme",
+    "mkdocs",
+    "mkdocstrings",
 ]
 [tool.setuptools]
-packages = ["build_measurand"]
+packages = ["measurand"]
 
 [tool.setuptools_scm]
-parentdir_prefix_version = "build-measurand-"
+parentdir_prefix_version = "measurand-"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "--cov=build_measurand --cov-report html"
+addopts = "--cov=measurand --cov-report html"
 testpaths = ["tests"]
+
+[tool.ruff.isort]
+known-first-party = ["carbonation*"]

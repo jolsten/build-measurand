@@ -1,25 +1,27 @@
-import pytest
-from hypothesis import given, assume, strategies as st
 import numpy as np
 import pyarrow as pa
-from build_measurand.utils import _size_to_uint
-from build_measurand.interp import (
-    Interp,
-    Unsigned,
-    OnesComplement,
-    TwosComplement,
+import pytest
+from hypothesis import assume, given
+from hypothesis import strategies as st
+
+from measurand.interp import (
     IEEE16,
     IEEE32,
     IEEE64,
-    MilStd1750A32,
-    MilStd1750A48,
     TI32,
     TI40,
+    Interp,
     InvalidInterpSize,
-    InvalidInterpType,
+    MilStd1750A32,
+    MilStd1750A48,
+    OnesComplement,
+    TwosComplement,
+    Unsigned,
 )
-from tests.conftest import ARRAY_SIZE
+from measurand.utils import _size_to_uint
+
 from . import strategies as cst
+from .conftest import ARRAY_SIZE
 
 
 @given(cst.uint_and_size())

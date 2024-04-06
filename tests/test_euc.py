@@ -1,10 +1,13 @@
-import pytest
 import numpy as np
 import pyarrow as pa
-from hypothesis import given, assume, strategies as st
-from build_measurand.euc import ScaleFactorEUC, RE_SCALEFACTOR, make_euc
-from tests.conftest import ARRAY_SIZE
+import pytest
+from hypothesis import given
+from hypothesis import strategies as st
+
+from measurand.euc import RE_SCALEFACTOR, ScaleFactorEUC, make_euc
+
 from . import strategies as cst
+from .conftest import ARRAY_SIZE
 
 
 @given(st.lists(cst.euc_float(), min_size=1, max_size=3))

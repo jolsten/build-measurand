@@ -1,10 +1,13 @@
 import pytest
-from hypothesis import given, assume, strategies as st
-from build_measurand.component import make_component
-from build_measurand.parameter import make_parameter
+from hypothesis import assume, given
+from hypothesis import strategies as st
+
+from measurand.component import make_component
+from measurand.parameter import make_parameter
+
 from . import strategies as cst
+from .cases import Example, component_test_cases, parameter_test_cases
 from .conftest import ARRAY_SIZE, SAMPLE_NDARRAY, SAMPLE_PAARRAY
-from .cases import Example, parameter_test_cases, component_test_cases
 
 
 @given(st.lists(st.sampled_from(component_test_cases), min_size=1, max_size=8))

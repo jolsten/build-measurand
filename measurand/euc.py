@@ -7,7 +7,7 @@ import pyarrow as pa
 import pyarrow.compute as pc
 from pydantic import BeforeValidator
 
-from build_measurand.generic import MeasurandModifier
+from measurand.generic import MeasurandModifier
 
 RE_SCALEFACTOR = re.compile(
     r"^(?:EUC)?\[?(?:(?P<data_bias>\S+?),)?(?P<scale_factor>\S+?)(?:,(?P<scaled_bias>\S+?))?\]?$",

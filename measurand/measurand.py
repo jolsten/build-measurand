@@ -4,9 +4,9 @@ import numpy as np
 import pyarrow as pa
 from pydantic import BaseModel
 
-from build_measurand.euc import EUC, make_euc
-from build_measurand.interp import Interp, make_interp
-from build_measurand.parameter import DataArray, Parameter, make_parameter
+from measurand.euc import EUC, make_euc
+from measurand.interp import Interp, make_interp
+from measurand.parameter import DataArray, Parameter, make_parameter
 
 # from .sampling import SamplingStrategy
 

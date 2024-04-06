@@ -4,7 +4,7 @@ import numpy as np
 import pyarrow as pa
 import typeconvert.ufunc as tcu
 
-from build_measurand.generic import MeasurandModifier, ObjectFactory
+from measurand.generic import MeasurandModifier, ObjectFactory
 
 
 class Interp(MeasurandModifier):

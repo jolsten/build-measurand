@@ -1,6 +1,7 @@
 import numpy as np
 import pyarrow as pa
-from build_measurand.utils import _size_to_uint
+
+from measurand.utils import _size_to_uint
 
 ARRAY_SIZE = 100
 

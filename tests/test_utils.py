@@ -1,17 +1,20 @@
-import pytest
 import numpy as np
 import pyarrow as pa
-from hypothesis import given, assume, strategies as st
-from build_measurand.utils import (
-    _range_to_tuple,
-    _expand_list,
+import pytest
+from hypothesis import assume, given
+from hypothesis import strategies as st
+
+from measurand.utils import (
     _bit_range_to_mask_and_shift,
-    _size_to_uint,
+    _expand_component_range,
+    _expand_list,
+    _range_to_tuple,
     _reverse_bits_ndarray,
     _reverse_bits_paarray,
-    _expand_component_range,
+    _size_to_uint,
 )
-from tests.conftest import ARRAY_SIZE
+
+from .conftest import ARRAY_SIZE
 
 
 @pytest.mark.parametrize(
