@@ -157,7 +157,7 @@ class FloatInterpTester:
         result = self.strategy.apply_ndarray(data, self.size)
         assert list(result) == pytest.approx([value] * ARRAY_SIZE)
 
-    def test_ndarray(self, uint, value):
+    def test_paarray(self, uint, value):
         data = pa.array(np.array([uint] * ARRAY_SIZE, dtype=self.dtype))
         result = self.strategy.apply_paarray(data, self.size)
         assert result.to_pylist() == pytest.approx([value] * ARRAY_SIZE)

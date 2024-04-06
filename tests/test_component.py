@@ -40,7 +40,7 @@ def test_component_1_based_byte(word):
     spec = f"{word}"
     c = make_component(spec)
     assert c.word == word - 1
-    assert c.mask == None
+    assert c.mask is None
     assert c.shift == 0
 
 
@@ -49,7 +49,7 @@ def test_component_0_based_byte(word):
     spec = f"{word}"
     c = make_component(spec, one_based=False)
     assert c.word == word
-    assert c.mask == None
+    assert c.mask is None
     assert c.shift == 0
 
 

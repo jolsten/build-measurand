@@ -55,7 +55,7 @@ def test_expand_list(spec, result):
     assert _expand_list(spec) == result
 
 
-def test_expand_list_typeerror():
+def test_expand_list_typeerror_1():
     with pytest.raises(TypeError):
         _expand_list(1)
 
@@ -65,7 +65,7 @@ def test_expand_list_valueerror():
         _expand_list("1.23")
 
 
-def test_expand_list_typeerror():
+def test_expand_list_typeerror_2():
     with pytest.raises(ValueError):
         _expand_list("1:1-n")
 
