@@ -17,6 +17,7 @@ class Measurand(BaseModel):
     euc: Optional[EUC] = None
     # sampling: Optional[Sampling] = None
 
+    @property
     def size(self) -> int:
         return self.parameter.size
 
